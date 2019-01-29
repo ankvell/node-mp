@@ -1,7 +1,3 @@
-function joinById(list, details) {
-  return list.map(obj => Object.assign({}, obj, { discovery: details.find(inner => inner.id === obj.id) }));
-}
-
 const eventList = [{
   "id": "db50dd7a-6470-4e57-9848-94ea7c0e2982",
   "event": "Feednation"
@@ -76,4 +72,20 @@ const details = [{
   "venue": "00 Messerschmidt Plaza"
 }];
 
-console.log(joinById(eventList, details));
+
+function joinById(list, details) {
+  return list.map(obj => Object.assign({}, obj, { discovery: details.find(inner => inner.id === obj.id) }));  //joinById: 0.334ms
+}
+
+function joinById2(list, details) {
+  let result = {}, len = details.length;
+  for (let ii = 0; ii < len; ii++) {
+    result[details[ii].id] = details[ii]; //joinById2: 0.156ms
+  }
+
+  // result = Object.assign({}, ...details.map(itm => ({ [itm.id]: itm }))); // joinById2: 0.248ms
+  return list.map(item => ({...item, discovery: result[item.id]}));
+}
+
+console.log('joinById', joinById(eventList, details));
+console.log('joinById2', joinById2(eventList, details));
