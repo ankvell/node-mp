@@ -1,13 +1,11 @@
-const http = require('http')
-const PORT = 3050
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const PORT = 3000
 
-const { getEventsList, getImageData } = require('./src/handlers/request-handler')
+app.use(bodyParser.json())
 
-const server = http.createServer(getImageData)
-server.listen(PORT, (err) => {
-  if (err) {
-    return console.log('The connection was terminated due to ', err)
-  }
+require('./src/routes/event')(app)
+require('./src/routes/discovery')(app)
 
-  console.log(`Server is listening on ${ PORT }`)
-})
+app.listen(PORT, () => console.log(`Express server listening on port ${ PORT }`))

@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/ankvell/node-mp/issues"
   },
-  "homepage": "https://github.com/ankvell/node-mp#readme"
+  "homepage": "https://github.com/ankvell/node-mp#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "uuid": "^3.3.2"
+  }
 }
