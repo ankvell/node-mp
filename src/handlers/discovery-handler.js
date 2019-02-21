@@ -1,6 +1,6 @@
 const fs = require('fs')
 const uuid = require('uuid/v4')
-const DISCOVERY = '../db/discovery.json'
+const DISCOVERY = '../../db/discovery.json'
 
 const create = (req, res) => {
   const itemList = getDiscoveryData()
@@ -8,6 +8,7 @@ const create = (req, res) => {
   if (itemList.find(item => item.id === req.body.id)) {
     res.status(409).send({ message: 'Discovery already exists.' })
   }
+
   const data = { id: uuid(), ...req.body }
   itemList.push(data)
   setDiscoveryData(itemList)

@@ -1,6 +1,6 @@
 const fs = require('fs')
 const uuid = require('uuid/v4')
-const EVENTS = '../db/events.json'
+const EVENTS = '../../db/events.json'
 
 const create = (req, res) => {
   const itemList = getEventsData()
@@ -8,8 +8,9 @@ const create = (req, res) => {
   if (itemList.find(item => item.id === req.body.id)) {
     res.status(409).send({ message: 'Event already exists.' })
   }
-
-  itemList.push({ id: uuid(), ...req.body })
+  
+  const data = { id: uuid(), ...req.body }
+  itemList.push(data)
   setEventsData(itemList)
   res.setHeader('Content-Type', 'application/json')
   res.status(201).send(JSON.stringify(data))
