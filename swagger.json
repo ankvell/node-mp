@@ -1,0 +1,323 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Event server",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "basePath": "/",
+  "paths": {
+    "/event": {
+      "get": {
+        "tags": ["Event"],
+        "summary": "Find events list",
+        "operationId": "findAll",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Event"],
+        "summary": "Create an event",
+        "operationId": "create",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Create an event item",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EventCreate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created"
+          },
+          "409": {
+            "description": "Event already exists"
+          }
+        }
+      }
+    },
+    "/event/{id}": {
+      "get": {
+        "tags": ["Event"],
+        "summary": "Find event by ID",
+        "operationId": "findById",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of event to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Event"],
+        "summary": "Updated event data",
+        "operationId": "updateById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of event to return",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Update an event",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EventUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated"
+          },
+          "404": {
+            "description": "Event has not been found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Event"],
+        "summary": "Delete event from list",
+        "operationId": "deleteById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of event that needs to be deleted",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event has been successfully removed"
+          },
+          "404": {
+            "description": "Event has not been found"
+          }
+        }
+      }
+    },
+    "/discovery": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "Find discovery list",
+        "operationId": "findAllDiscovery",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Discovery"],
+        "summary": "Create an discovery",
+        "operationId": "createDiscovery",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Create an discovery item",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DiscoveryCreate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created"
+          },
+          "409": {
+            "description": "Discovery already exists"
+          }
+        }
+      }
+    },
+    "/discovery/{id}": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "Find discovery by ID",
+        "operationId": "findDiscoveryById",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of discovery to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Discovery"],
+        "summary": "Updated discovery data",
+        "operationId": "updateDiscoveryById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of discovery to return",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Create an discovery item",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DiscoveryUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated"
+          },
+          "404": {
+            "description": "Discovery has not been found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Discovery"],
+        "summary": "Delete discovery from list",
+        "operationId": "deleteDiscoveryById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of discovery that needs to be deleted",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Discovery has been successfully removed"
+          },
+          "404": {
+            "description": "Discovery has not been found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "EventCreate": {
+      "type": "object",
+      "required": ["event"],
+      "properties": {
+        "id": { "type": "string" },
+        "event": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "minLength": 3,
+          "maxLength": 60
+        }
+      }
+    },
+    "EventUpdate": {
+      "type": "object",
+      "required": ["event"],
+      "properties": {
+        "event": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "minLength": 3,
+          "maxLength": 60
+        }
+      }
+    },
+    "DiscoveryCreate": {
+      "type": "object",
+      "required": ["city", "venue"],
+      "properties": {
+        "id": { "type": "string" },
+        "city": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "minLength": 3,
+          "maxLength": 60
+        },
+        "venue": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "minLength": 3,
+          "maxLength": 60
+        }
+      }
+    },
+    "DiscoveryUpdate": {
+      "type": "object",
+      "required": ["city", "venue"],
+      "properties": {
+        "city": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "minLength": 3,
+          "maxLength": 60
+        },
+        "venue": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "minLength": 3,
+          "maxLength": 60
+        }
+      }
+    }
+  }
+}
