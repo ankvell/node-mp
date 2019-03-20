@@ -1,92 +1,68 @@
-const fs = require('fs')
-const uuid = require('uuid/v4')
+
 const Joi = require('joi')
 const { createSchema, updateSchema }  = require('../validations/discovery.schema')
-const DISCOVERY = '../../db/discovery.json'
+const ObjectID = require('mongodb').ObjectID
 
-const create = (req, res) => {
-  const itemList = getDiscoveryData()
-  const data = { id: uuid(), ...req.body }
+const discoveryHandler = (db) => {
+  const collection = db.collection('discoveries')
 
-  Joi.validate(req.body, createSchema, function (error, value) {
-    if (error)
-      res.status(422).send({ error: error.message || 'Unprocessable Entity' })
-      return
-  })
-
-  if (itemList.find(item => item.id === req.body.id)) {
-    res.status(409).send({ message: 'Discovery already exists.' })
+  const create = (req, res) => {
+    Joi.validate(req.body, createSchema, (error, value) => {
+      if (error)
+        res.status(422).send({ error: error.message || 'Unprocessable Entity' })
+        return
+    })
+  
+    collection
+      .insert(req.body)
+      .then((data) => {
+        res.status(201).json(data)
+      })
+      .catch(err => console.log(err))
   }
 
-  itemList.push(data)
-  setDiscoveryData(itemList)
-  res.setHeader('Content-Type', 'application/json')
-  res.status(201).send(JSON.stringify(data))
-}
-
-const findAll = (req, res) => {
-  const itemList = getDiscoveryData()
-
-  res.setHeader('Content-Type', 'application/json')
-  res.status(200).send(JSON.stringify(itemList))
-}
-
-const findById = (req, res) => {
-  const itemList = getDiscoveryData()
-  const item = itemList.find(item => item.id === req.params.id)
-
-  if (!item) {
-    res.status(404).send({ message: 'Discovery has not been found.' })
+  const findAll = (req, res) => {
+    collection.find({}).toArray()
+      .then((data) => res.status(200).json(data))
+      .catch(err => console.log(err))
   }
-  res.setHeader('Content-Type', 'application/json')
-  res.status(200).send(JSON.stringify(item))
-}
 
-const updateById = (req, res) => {
-  let itemList = getDiscoveryData()
-
-  Joi.validate(req.body, updateSchema, function (error, value) {
-    if (error)
-      res.status(422).send({ error: error.message || 'Unprocessable Entity' })
-      return
-  })
-
-  if (!itemList.find((item) => item.id === req.params.id)) {
-    res.status(404).send({ message : 'Discovery has not been found.'})
+  const findById = (req, res) => {
+    collection.findOne({_id: new ObjectID(req.params)})
+      .then((data) => res.status(200).json(data))
+      .catch(err => console.log(err))
   }
-  itemList = itemList.map(item => item.id === req.params.id ? { id: item.id, ...req.body } : item)
 
-  setDiscoveryData(itemList)
-  res.setHeader('Content-Type', 'application/json')
-  res.status(200).send(JSON.stringify(req.body))
+  const updateById = (req, res) => {  
+    const {id, ...update} = req.body
+
+    Joi.validate(req.body, updateSchema, (error, value) => {
+      if (error)
+        res.status(422).send({ error: error.message || 'Unprocessable Entity' })
+        return
+    })
+  
+    collection.findOneAndUpdate(
+      {_id: new ObjectID(id)},
+      {$set: update},
+      {returnOriginal: false})
+      .then((data) => res.status(200).json(data.value))
+      .catch(err => console.log(err))
+  }
+
+  const deleteById = (req, res) => {
+    collection.remove({_id: new ObjectID(req.params)}, true)
+    .then(() =>  res.status(200).send(req.params))
+    .catch(err => console.log(err))
+  }
+
+  return {
+    create,
+    findAll,
+    findById,
+    updateById,
+    deleteById
+  }
 }
 
-const deleteById = (req, res) => {
-  const itemList = getDiscoveryData()
-  const item = itemList.find(elem => elem.id === req.params.id)
-  if (item) {
-    itemList.splice(itemList.indexOf(item), 1)
-    setDiscoveryData(itemList)
-    res.setHeader('Content-Type', 'application/json')
-    res.status(200).send({ message: 'Discovery has been successfully removed.' })
-  } else {
-    res.status(404).send({ message: 'Discovery has not been found.' })
-  }Î
-}
-
-const getDiscoveryData = () => {
-  const list = fs.readFileSync(`${ __dirname }/${ DISCOVERY }`, 'utf8')
-  return JSON.parse(list)
-}
-
-const setDiscoveryData = (list) => {
-  return fs.writeFileSync(`${ __dirname }/${ DISCOVERY }`, JSON.stringify(list))
-}
-
-module.exports = {
-  create,
-  findAll,
-  findById,
-  updateById,
-  deleteById
-}
+module.exports = discoveryHandler

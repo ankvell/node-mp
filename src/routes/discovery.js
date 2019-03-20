@@ -1,6 +1,7 @@
-const discoveryHandler = require('../handlers/discovery-handler')
+const discoveryRouter = (app, db) => {
 
-const discoveryRouter = (app) => { 
+  const discoveryHandler = require('../handlers/discovery-handler')(db)
+
   app.get('/discovery', discoveryHandler.findAll)
   app.get('/discovery/:id', discoveryHandler.findById)
   app.post('/discovery', discoveryHandler.create)
