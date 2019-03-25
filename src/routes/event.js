@@ -1,6 +1,6 @@
-const eventRouter = (app, db) => {
+const eventRouter = (app) => {
 
-  const eventsHandler = require('../handlers/events-handler')(db)
+  const eventsHandler = require('../handlers/events-handler')()
 
   app.get('/event', eventsHandler.findAll)
   app.get('/event/:id', eventsHandler.findById)

@@ -5,9 +5,7 @@ const swaggerDocument = require('./swagger.json')
 const { newSwaggerDocument } = require('./src/validations/definitions.config')
 const EventRoute = require('./src/routes/event')
 const DescoveryRoute = require('./src/routes/discovery')
-
-const mongodb = require('mongodb')
-const mongoClient = mongodb.MongoClient
+const mongoose = require('mongoose')
 const URL = 'mongodb://localhost:27017/events'
 
 const app = express()
@@ -15,20 +13,22 @@ const PORT = 3050
 
 app.use(bodyParser.json())
 
+EventRoute(app)
+DescoveryRoute(app)
+
 app.use((err, req, res, next) => {
   res.status(500).send({
     error: err.message || 'Internal Server Error'
   })
 })
 
-mongoClient.connect(URL, { useNewUrlParser: true })
-  .then((client) => {
-    const db = client.db()
+mongoose.connect(URL, { useNewUrlParser: true })
 
-    EventRoute(app, db)
-    DescoveryRoute(app, db)
-  })
-  .catch((err) => console.log(err))
+const db = mongoose.connection
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB is connected')
+})
+db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup({...swaggerDocument, definitions: { ...newSwaggerDocument }}))
 app.listen(PORT, () => console.log(`Express server listening on port ${ PORT }`))

@@ -1,9 +1,8 @@
 const Joi = require('joi')
 const { createSchema, updateSchema } = require('../validations/event.schema')
-const ObjectID = require('mongodb').ObjectID
+const { mongooseEventSchema } = require('../validations/model')
 
-const eventHandler = (db) => {
-  const collection = db.collection('events')
+const eventHandler = () => {
 
   const create = (req, res) => {
     Joi.validate(req.body, createSchema, (error, value) => {
@@ -12,8 +11,8 @@ const eventHandler = (db) => {
         return
     })
 
-    collection
-      .insert(req.body)
+    mongooseEventSchema
+      .create(req.body)
       .then((data) => {
         res.status(201).json(data)
       })
@@ -21,11 +20,11 @@ const eventHandler = (db) => {
   }
 
   const findAll = (req, res) => {
-    collection.find({}).toArray().then((data) => res.status(200).json(data))
+    mongooseEventSchema.find({}).then((data) => res.status(200).json(data))
   }
 
   const findById = (req, res) => {
-    collection.findOne({_id: new ObjectID(req.params)})
+    mongooseEventSchema.findById({ _id: req.params })
       .then((data) => res.status(200).json(data))
       .catch(err => console.log(err))
   }
@@ -39,16 +38,16 @@ const eventHandler = (db) => {
         return
     })
   
-    collection.findOneAndUpdate(
-      {_id: new ObjectID(id)},
+    mongooseEventSchema.findByIdAndUpdate(
+      {_id: id},
       {$set: update},
-      {returnOriginal: false})
+      {new: true})
       .then((data) => res.status(200).json(data.value))
       .catch(err => console.log(err))
   }
 
   const deleteById = (req, res) => {
-    collection.remove({_id: new ObjectID(req.params)}, true)
+    mongooseEventSchema.findByIdAndRemove({ _id: req.params })
     .then(() =>  res.status(200).send(req.params))
     .catch(err => console.log(err))
   }

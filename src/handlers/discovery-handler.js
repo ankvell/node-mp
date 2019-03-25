@@ -1,10 +1,9 @@
 
 const Joi = require('joi')
 const { createSchema, updateSchema }  = require('../validations/discovery.schema')
-const ObjectID = require('mongodb').ObjectID
+const { mongooseDiscoverySchema } = require('../validations/model')
 
-const discoveryHandler = (db) => {
-  const collection = db.collection('discoveries')
+const discoveryHandler = () => {
 
   const create = (req, res) => {
     Joi.validate(req.body, createSchema, (error, value) => {
@@ -13,8 +12,8 @@ const discoveryHandler = (db) => {
         return
     })
   
-    collection
-      .insert(req.body)
+    mongooseDiscoverySchema
+      .create(req.body)
       .then((data) => {
         res.status(201).json(data)
       })
@@ -22,13 +21,13 @@ const discoveryHandler = (db) => {
   }
 
   const findAll = (req, res) => {
-    collection.find({}).toArray()
+    mongooseDiscoverySchema.find({})
       .then((data) => res.status(200).json(data))
       .catch(err => console.log(err))
   }
 
   const findById = (req, res) => {
-    collection.findOne({_id: new ObjectID(req.params)})
+    mongooseDiscoverySchema.findOne({ _id: req.params })
       .then((data) => res.status(200).json(data))
       .catch(err => console.log(err))
   }
@@ -42,16 +41,16 @@ const discoveryHandler = (db) => {
         return
     })
   
-    collection.findOneAndUpdate(
-      {_id: new ObjectID(id)},
-      {$set: update},
-      {returnOriginal: false})
+    mongooseDiscoverySchema.findByIdAndUpdate(
+      {_id: id},
+      {$set: newData},
+      {new: true})
       .then((data) => res.status(200).json(data.value))
       .catch(err => console.log(err))
   }
 
   const deleteById = (req, res) => {
-    collection.remove({_id: new ObjectID(req.params)}, true)
+    mongooseDiscoverySchema.findByIdAndRemove({ _id: req.params })
     .then(() =>  res.status(200).send(req.params))
     .catch(err => console.log(err))
   }
